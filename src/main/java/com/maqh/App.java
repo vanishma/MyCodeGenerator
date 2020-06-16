@@ -1,5 +1,10 @@
 package com.maqh;
 
+import com.maqh.config.Config;
+import com.maqh.config.GlobalConfig;
+import com.maqh.generator.Generator;
+import com.maqh.generator.GetDataBase;
+
 import java.sql.*;
 
 /**
@@ -7,29 +12,12 @@ import java.sql.*;
  */
 public class App {
     public static void main(String[] args)throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/ly_app?&characterEncoding=utf8&useSSL=false&serverTimezone=UTC","root","Henanlingyu0.");
-        DatabaseMetaData metaData = connection.getMetaData();
 
-        String[] types = {"TABLE"};
-        ResultSet tables = metaData.getTables(connection.getCatalog(), connection.getCatalog(), "%", types);
-
-        while (tables.next()) {
-            System.out.println(tables.getString(3));
-        }
-
-        //PreparedStatement show_tables = connection.prepareStatement("show tables");
-        //ResultSetMetaData md = show_tables.getMetaData();
-        //for (int i = 1; i < md.getColumnCount(); i++) {
-        //    System.out.println(md.getColumnTypeName(i) + " =====" + md.getColumnName(i));
-        //}
-
-
-        //PreparedStatement ps = connection.prepareStatement("select * from t_menu");
-        //ResultSet rs = ps.executeQuery();
-        //ResultSetMetaData md = rs.getMetaData();
-        //for (int i = 1; i < md.getColumnCount(); i++) {
-        //    System.out.println(md.getColumnTypeName(i) + " =====" + md.getColumnName(i));
-        //}
-
+        Config config = new Config();
+        config.setUrl("jdbc:mysql://127.0.0.1:3306/ly_app?&characterEncoding=utf8&useSSL=false&serverTimezone=UTC");
+        config.setUserName("root");
+        config.setPassword("Henanlingyu0.");
+        Generator generator = new Generator();
+        generator.runGener(config, new GlobalConfig());
     }
 }
