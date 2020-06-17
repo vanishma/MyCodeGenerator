@@ -21,8 +21,14 @@ public class GlobalConfig {
      */
     private boolean fileOverride = true;
 
+    /**
+     * 基础包
+     */
     private String defaultDir = "\\src\\main\\java\\";
 
+    /**
+     * 包路径
+     */
     private String packDir = "com.maqh.user";
 
     public String getDefaultDir() {

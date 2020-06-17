@@ -1,7 +1,14 @@
 package ${classPath};
 
+/**
+ * ${tableComment}
+ **/
 public class ${fileName} {
-    <#list type as stu>
-        private ${stu.type} ${stu.name};
+    <#list typeName as stu>
+
+        /**
+         * ${comment[stu_index]}
+         **/
+        private ${typeName[stu_index]} ${name[stu_index]};
     </#list>
 }

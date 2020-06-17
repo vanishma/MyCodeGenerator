@@ -3,7 +3,6 @@ package com.maqh;
 import com.maqh.config.Config;
 import com.maqh.config.GlobalConfig;
 import com.maqh.generator.Generator;
-import com.maqh.generator.GetDataBase;
 
 import java.sql.*;
 
@@ -18,6 +17,8 @@ public class App {
         config.setUserName("root");
         config.setPassword("Henanlingyu0.");
         Generator generator = new Generator();
-        generator.runGener(config, new GlobalConfig());
+        generator.setConfig(config);
+        generator.setGlobalConfig(new GlobalConfig());
+        generator.runGener("t_menu");
     }
 }

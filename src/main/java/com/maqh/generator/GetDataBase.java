@@ -1,7 +1,6 @@
 package com.maqh.generator;
 
 import com.maqh.config.Config;
-import com.maqh.config.GlobalConfig;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class GetDataBase {
 
     private Config config;
 
-    private static final String SQL = "SELECT * FROM";
+    private static final String SQL = "SELECT * FROM ";
 
     /**
      * 获取数据库连接
@@ -93,7 +92,7 @@ public class GetDataBase {
         try {
             pstem = connection.prepareStatement(tableSql);
             ResultSetMetaData metaData = pstem.getMetaData();
-            for (int i = 1; i < metaData.getColumnCount(); i++) {
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
                 columnNames.add(metaData.getColumnName(i));
             }
 
