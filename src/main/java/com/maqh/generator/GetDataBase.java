@@ -1,6 +1,8 @@
 package com.maqh.generator;
 
 import com.maqh.config.Config;
+import com.maqh.config.GlobalConfig;
+import com.maqh.converts.MySqlTypeConvert;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -115,7 +117,7 @@ public class GetDataBase {
      * @param tableName 表名
      * @return {@link List< String>}
      */
-    public List<String> getColumnTypes(String tableName) {
+    public List<String> getColumnTypes(String tableName, GlobalConfig globalConfig) {
         List<String> columnTypes = new ArrayList<>();
         //与数据库的连接
         Connection conn = getConnection();
@@ -128,7 +130,7 @@ public class GetDataBase {
             //表列数
             int size = rsmd.getColumnCount();
             for (int i = 0; i < size; i++) {
-                columnTypes.add(rsmd.getColumnTypeName(i + 1));
+                columnTypes.add(new MySqlTypeConvert().processTypeConvert(globalConfig, rsmd.getColumnTypeName(i + 1)).getType());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,6 +149,7 @@ public class GetDataBase {
 
     /**
      * 获取表中字段的所有注释
+     *
      * @param tableName 表名
      * @return {@link List< String>}
      */
@@ -181,6 +184,7 @@ public class GetDataBase {
 
     /**
      * 获取建表语句
+     *
      * @param tableName 表名
      * @return
      */
@@ -199,7 +203,7 @@ public class GetDataBase {
             rs.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        }  finally {
+        } finally {
             if (stmt != null) {
                 try {
                     stmt.close();

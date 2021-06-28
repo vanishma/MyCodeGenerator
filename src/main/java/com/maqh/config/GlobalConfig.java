@@ -1,5 +1,7 @@
 package com.maqh.config;
 
+import com.maqh.rules.DateType;
+
 /**
  * @author: maqh
  * @since: 2020-06-16
@@ -30,6 +32,11 @@ public class GlobalConfig {
      * 包路径
      */
     private String packDir = "com.maqh.user";
+
+    /**
+     * 时间类型对应策略
+     */
+    private DateType dateType = DateType.TIME_PACK;
 
     public String getDefaultDir() {
         return defaultDir;
@@ -73,5 +80,13 @@ public class GlobalConfig {
 
     public void setFileOverride(boolean fileOverride) {
         this.fileOverride = fileOverride;
+    }
+
+    public DateType getDateType() {
+        return dateType;
+    }
+
+    public void setDateType(DateType dateType) {
+        this.dateType = dateType;
     }
 }

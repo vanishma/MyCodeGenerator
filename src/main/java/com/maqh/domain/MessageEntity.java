@@ -22,6 +22,7 @@ public class MessageEntity {
      * 表备注
      */
     private String tableComment;
+
     /**
      * 表名
      */

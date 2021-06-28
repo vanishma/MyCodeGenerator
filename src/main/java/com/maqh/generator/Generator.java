@@ -2,15 +2,14 @@ package com.maqh.generator;
 
 import com.maqh.comm.StringUtils;
 import com.maqh.config.Config;
-import com.maqh.domain.MessageEntity;
 import com.maqh.config.GlobalConfig;
+import com.maqh.domain.MessageEntity;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 import java.io.*;
-import java.sql.*;
-import java.util.Map;
+import java.sql.SQLException;
 
 /**
  * @author: maqh
@@ -32,9 +31,9 @@ public class Generator {
         String tableComment = getDataBase.parse(getDataBase.getTableName(tableName));
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setTableComment(tableComment);
-        messageEntity.setTableName("t_menu");
+        messageEntity.setTableName(tableName);
 
-        messageEntity.setTypeName(getDataBase.getColumnTypes(tableName));
+        messageEntity.setTypeName(getDataBase.getColumnTypes(tableName, globalConfig));
         messageEntity.setName(getDataBase.getColumnNames(tableName));
         messageEntity.setComment(getDataBase.getColumnComments(tableName));
 
@@ -43,7 +42,7 @@ public class Generator {
 
     /**
      * 生成实体
-     * @param messageEntity
+     * @param messageEntity 表信息
      */
     public void generateEntityFile(MessageEntity messageEntity) {
 
@@ -65,9 +64,7 @@ public class Generator {
                 new File(globalConfig.getPackDirPath()).mkdirs();
                 generateFile(messageEntity, out, template, docFile);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TemplateException e) {
+        } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }
     }
