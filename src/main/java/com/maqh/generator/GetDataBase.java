@@ -1,19 +1,25 @@
 package com.maqh.generator;
 
+import com.maqh.comm.StringUtils;
 import com.maqh.config.Config;
 import com.maqh.config.GlobalConfig;
 import com.maqh.converts.MySqlTypeConvert;
+import com.maqh.domain.MessageEntity;
+import com.maqh.rules.IColumnType;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author: maqh
  * @since: 2020-06-16
  */
 public class GetDataBase {
-
+    private static Logger log = Logger.getLogger("GetDataBase");
     private Config config;
 
     private static final String SQL = "SELECT * FROM ";
@@ -94,8 +100,10 @@ public class GetDataBase {
         try {
             pstem = connection.prepareStatement(tableSql);
             ResultSetMetaData metaData = pstem.getMetaData();
+
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                columnNames.add(metaData.getColumnName(i));
+                System.out.println(metaData.getColumnName(i) +"===="+StringUtils.getColumnName(metaData.getColumnName(i)));
+                columnNames.add(StringUtils.getColumnName(metaData.getColumnName(i)));
             }
 
         } catch (SQLException throwables) {
@@ -115,10 +123,12 @@ public class GetDataBase {
      * 获取表中所有字段类型
      *
      * @param tableName 表名
+     * @param messageEntity
      * @return {@link List< String>}
      */
-    public List<String> getColumnTypes(String tableName, GlobalConfig globalConfig) {
+    public List<String> getColumnTypes(String tableName, GlobalConfig globalConfig, MessageEntity messageEntity) {
         List<String> columnTypes = new ArrayList<>();
+        Set<String> importPackages = new HashSet<>();
         //与数据库的连接
         Connection conn = getConnection();
         PreparedStatement pStemt = null;
@@ -130,8 +140,15 @@ public class GetDataBase {
             //表列数
             int size = rsmd.getColumnCount();
             for (int i = 0; i < size; i++) {
-                columnTypes.add(new MySqlTypeConvert().processTypeConvert(globalConfig, rsmd.getColumnTypeName(i + 1)).getType());
+                log.info("---------------------------获取数据类型---------------------------");
+                IColumnType iColumnType = new MySqlTypeConvert().processTypeConvert(globalConfig, rsmd.getColumnTypeName(i + 1));
+                columnTypes.add(iColumnType.getType());
+                if (iColumnType.getPkg() != null) {
+                    importPackages.add(iColumnType.getPkg());
+                }
             }
+            //设置导入包
+            messageEntity.setImportPackages(new ArrayList<>(importPackages));
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

@@ -3,45 +3,79 @@ package com.maqh.generator;
 import com.maqh.comm.StringUtils;
 import com.maqh.config.Config;
 import com.maqh.config.GlobalConfig;
+import com.maqh.config.StrategyConfig;
 import com.maqh.domain.MessageEntity;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.sql.SQLException;
+
 
 /**
  * @author: maqh
  * @since: 2020-06-16
  */
 public class Generator {
+    private static final Logger log = LoggerFactory.getLogger(Generator.class);
 
+    /**
+     * 全局配置
+     */
     private GlobalConfig globalConfig;
 
+    /**
+     * 数据库 配置信息
+     */
     private Config config;
+
+    /**
+     * 策略配置
+     */
+    private StrategyConfig strategyConfig;
 
     Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
     Writer out = null;
 
     public void runGener(String tableName) throws SQLException {
+        log.info("---------------------------代码生成开始---------------------------");
         GetDataBase getDataBase = new GetDataBase();
+        log.info("---------------------------配置参数---------------------------");
         getDataBase.setConfig(config);
         //表备注
+        log.info("---------------------------获取表备注---------------------------");
         String tableComment = getDataBase.parse(getDataBase.getTableName(tableName));
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setTableComment(tableComment);
         messageEntity.setTableName(tableName);
-
-        messageEntity.setTypeName(getDataBase.getColumnTypes(tableName, globalConfig));
+        log.info("---------------------------获取数据类型---------------------------");
+        messageEntity.setTypeName(getDataBase.getColumnTypes(tableName, globalConfig, messageEntity));
+        log.info("---------------------------获取字段---------------------------");
         messageEntity.setName(getDataBase.getColumnNames(tableName));
+        log.info("---------------------------获取字段备注---------------------------");
         messageEntity.setComment(getDataBase.getColumnComments(tableName));
+        log.info("---------------------------开始生成文件---------------------------");
 
+        log.info("---------------------------开始生成文件---------------------------");
+        log.info("---------------------------开始生成Entity---------------------------");
         generateEntityFile(messageEntity);
+        log.info("---------------------------代码生成结束---------------------------");
+    }
+
+    /**
+     * 初始化设置信息
+     */
+    public void init(MessageEntity messageEntity) {
+        messageEntity.setLombok(strategyConfig.isEntityLombokModel());
+
     }
 
     /**
      * 生成实体
+     *
      * @param messageEntity 表信息
      */
     public void generateEntityFile(MessageEntity messageEntity) {
@@ -51,7 +85,7 @@ public class Generator {
 
             configuration.setDirectoryForTemplateLoading(new File(globalConfig.getTemplatePath()));
             Template template = configuration.getTemplate("Entity.ftl");
-            File docFile = new File(globalConfig.getPackDirPath() + "\\"+messageEntity.getFileName()+".java");
+            File docFile = new File(globalConfig.getPackDirPath() + "\\" + messageEntity.getFileName() + ".java");
 
             messageEntity.setClassPath(globalConfig.getPackDir());
 
@@ -91,5 +125,9 @@ public class Generator {
 
     public void setConfig(Config config) {
         this.config = config;
+    }
+
+    public void setStrategyConfig(StrategyConfig strategyConfig) {
+        this.strategyConfig = strategyConfig;
     }
 }

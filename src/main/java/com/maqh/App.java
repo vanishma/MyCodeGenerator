@@ -2,6 +2,7 @@ package com.maqh;
 
 import com.maqh.config.Config;
 import com.maqh.config.GlobalConfig;
+import com.maqh.config.StrategyConfig;
 import com.maqh.generator.Generator;
 
 import java.sql.*;
@@ -20,10 +21,13 @@ public class App {
         GlobalConfig globalConfig = new GlobalConfig();
         globalConfig.setPackDir("com.maqh.user1");
 
+        StrategyConfig strategyConfig = new StrategyConfig();
+        strategyConfig.setEntityLombokModel(true);
 
         Generator generator = new Generator();
         generator.setConfig(config);
         generator.setGlobalConfig(globalConfig);
+        generator.setStrategyConfig(strategyConfig);
         generator.runGener("t_area");
     }
 }

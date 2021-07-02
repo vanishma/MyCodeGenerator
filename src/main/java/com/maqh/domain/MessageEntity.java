@@ -43,6 +43,28 @@ public class MessageEntity {
      */
     private List<String> comment;
 
+    private boolean lombok;
+
+    public boolean isLombok() {
+        return lombok;
+    }
+
+    public void setLombok(boolean lombok) {
+        this.lombok = lombok;
+    }
+
+    /**
+     * 需要导入的包的集合
+     */
+    private List<String> importPackages;
+
+    public List<String> getImportPackages() {
+        return importPackages;
+    }
+
+    public void setImportPackages(List<String> importPackages) {
+        this.importPackages = importPackages;
+    }
 
     public String getTableComment() {
         return tableComment;
