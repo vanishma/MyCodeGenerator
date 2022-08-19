@@ -48,14 +48,6 @@ public class MessageEntity {
      */
     private boolean lombok;
 
-    public boolean isLombok() {
-        return lombok;
-    }
-
-    public void setLombok(boolean lombok) {
-        this.lombok = lombok;
-    }
-
     /**
      * 需要导入的包的集合
      */
@@ -123,5 +115,13 @@ public class MessageEntity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public boolean isLombok() {
+        return lombok;
+    }
+
+    public void setLombok(boolean lombok) {
+        this.lombok = lombok;
     }
 }

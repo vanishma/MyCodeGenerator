@@ -34,4 +34,4 @@ public class ${fileName} {
 
 </#list>
 </#if>
-}
+}AreaController

@@ -41,28 +41,30 @@ public class Generator {
     Writer out = null;
 
     public void runGener(String tableName) throws SQLException {
-        log.info("---------------------------代码生成开始---------------------------");
+        log.debug("---------------------------代码生成开始---------------------------");
         GetDataBase getDataBase = new GetDataBase();
-        log.info("---------------------------配置参数---------------------------");
+        log.debug("---------------------------配置参数---------------------------");
         getDataBase.setConfig(config);
         //表备注
-        log.info("---------------------------获取表备注---------------------------");
+        log.debug("---------------------------获取表备注---------------------------");
         String tableComment = getDataBase.parse(getDataBase.getTableName(tableName));
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setTableComment(tableComment);
         messageEntity.setTableName(tableName);
-        log.info("---------------------------获取数据类型---------------------------");
+        log.debug("---------------------------获取数据类型---------------------------");
         messageEntity.setTypeName(getDataBase.getColumnTypes(tableName, globalConfig, messageEntity));
-        log.info("---------------------------获取字段---------------------------");
+        log.debug("---------------------------获取字段---------------------------");
         messageEntity.setName(getDataBase.getColumnNames(tableName));
-        log.info("---------------------------获取字段备注---------------------------");
+        log.debug("---------------------------获取字段备注---------------------------");
         messageEntity.setComment(getDataBase.getColumnComments(tableName));
-        log.info("---------------------------开始生成文件---------------------------");
-
-        log.info("---------------------------开始生成文件---------------------------");
-        log.info("---------------------------开始生成Entity---------------------------");
+        log.debug("---------------------------获取是否是lombok---------------------------");
+        messageEntity.setLombok(strategyConfig.isEntityLombokModel());
+        log.debug("---------------------------开始生成文件---------------------------");
+        log.debug("---------------------------开始生成Entity---------------------------");
         generateEntityFile(messageEntity);
-        log.info("---------------------------代码生成结束---------------------------");
+        log.debug("---------------------------生成Entity 结束---------------------------");
+        generateControllerFile(messageEntity);
+        log.debug("---------------------------代码生成结束---------------------------");
     }
 
     /**
@@ -79,30 +81,60 @@ public class Generator {
      * @param messageEntity 表信息
      */
     public void generateEntityFile(MessageEntity messageEntity) {
-
         try {
-            messageEntity.setFileName(StringUtils.getTableName(messageEntity.getTableName()));
-
+            //拼接文件名称
+            messageEntity.setFileName(StringUtils.getTableName(messageEntity.getTableName()) + "Entity");
+            messageEntity.setClassPath(globalConfig.getPackDir());
             configuration.setDirectoryForTemplateLoading(new File(globalConfig.getTemplatePath()));
             Template template = configuration.getTemplate("Entity.ftl");
-            File docFile = new File(globalConfig.getPackDirPath() + "\\" + messageEntity.getFileName() + ".java");
-
-            messageEntity.setClassPath(globalConfig.getPackDir());
-            messageEntity.setLombok(strategyConfig.isEntityLombokModel());
-            if (docFile.exists()) {
-                if (globalConfig.isFileOverride()) {
-                    generateFile(messageEntity, out, template, docFile);
-                }
-            } else {
-                //目录不存在创建目录
-                new File(globalConfig.getPackDirPath()).mkdirs();
-                generateFile(messageEntity, out, template, docFile);
-            }
-        } catch (IOException | TemplateException e) {
+            File file = new File(globalConfig.getPackDirPath() + "\\" + messageEntity.getFileName() + ".java");
+            configuration(messageEntity, template, file);
+        } catch (IOException e) {
+            log.error("读取模板异常");
             e.printStackTrace();
         }
     }
 
+    /**
+     * 生成Controller
+     *
+     * @param messageEntity 表信息
+     */
+    private void generateControllerFile(MessageEntity messageEntity) {
+        try {
+            messageEntity.setFileName(StringUtils.getTableName(messageEntity.getTableName()) + "Controller");
+            messageEntity.setClassPath(globalConfig.getPackDir());
+            configuration.setDirectoryForTemplateLoading(new File(globalConfig.getTemplatePath()));
+            Template template = configuration.getTemplate("Controller.ftl");
+            File file = new File(globalConfig.getPackDirPath() + "\\" + messageEntity.getFileName() + ".java");
+            configuration(messageEntity, template, file);
+        } catch (IOException e) {
+            log.error("读取模板异常");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 生成文件前配置
+     *
+     * @param messageEntity 模板数据
+     * @param template      路径
+     */
+    public void configuration(MessageEntity messageEntity, Template template, File file) {
+        try {
+            if (file.exists()) {
+                if (globalConfig.isFileOverride()) {
+                    generateFile(messageEntity, out, template, file);
+                }
+            } else {
+                //目录不存在创建目录
+                new File(globalConfig.getPackDirPath()).mkdirs();
+                generateFile(messageEntity, out, template, file);
+            }
+        } catch (IOException | TemplateException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 生成文件
