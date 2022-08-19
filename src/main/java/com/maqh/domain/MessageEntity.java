@@ -43,6 +43,9 @@ public class MessageEntity {
      */
     private List<String> comment;
 
+    /**
+     * 是否是lombok
+     */
     private boolean lombok;
 
     public boolean isLombok() {

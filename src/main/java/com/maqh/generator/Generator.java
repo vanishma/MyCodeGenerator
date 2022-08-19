@@ -88,7 +88,7 @@ public class Generator {
             File docFile = new File(globalConfig.getPackDirPath() + "\\" + messageEntity.getFileName() + ".java");
 
             messageEntity.setClassPath(globalConfig.getPackDir());
-
+            messageEntity.setLombok(strategyConfig.isEntityLombokModel());
             if (docFile.exists()) {
                 if (globalConfig.isFileOverride()) {
                     generateFile(messageEntity, out, template, docFile);

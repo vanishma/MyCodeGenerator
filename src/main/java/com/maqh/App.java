@@ -14,7 +14,8 @@ public class App {
     public static void main(String[] args)throws SQLException {
 
         Config config = new Config();
-        config.setUrl("jdbc:mysql://192.168.50.161:3306/ly_app?&characterEncoding=utf8&useSSL=false&serverTimezone=UTC");
+        config.setUrl("jdbc:mysql://192.168.50.165:3306/ly_app?&characterEncoding=utf8&useSSL=false&serverTimezone" +
+                "=UTC");
         config.setUserName("root");
         config.setPassword("Henanlingyu0.");
 
